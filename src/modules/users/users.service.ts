@@ -1,7 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepository } from './repositories/users.repository';
-import { UsersEntity } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
@@ -11,12 +10,11 @@ export class UsersService {
     return 'user created';
   }
 
-  findAll() {
-    return `This action returns all users`;
-  }
+  findAll() {}
 
   async findOne(id: number) {
-    return `user with ${id} `;
+    const user = await this.usersRepository.findOne({ where: { id } });
+    return user;
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

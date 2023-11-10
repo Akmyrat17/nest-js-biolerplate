@@ -4,7 +4,7 @@ import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
-  constructor(protected readonly configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService) {}
   createTypeOrmOptions(): TypeOrmModuleOptions {
     const { configService } = this;
     return {
@@ -15,7 +15,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       password: configService.getOrThrow('TYPEORM_PASSWORD'),
       database: configService.getOrThrow('TYPEORM_DATABASE'),
       autoLoadEntities: true,
-      synchronize: !configService.get('PRODUCTION'),
+      synchronize: true,
     };
   }
 }

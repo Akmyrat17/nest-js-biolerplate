@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class UsersEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: number;
 
   @Column()
@@ -10,6 +10,15 @@ export class UsersEntity {
 
   @Column({
     type: 'integer',
+    unique: true,
+    nullable: false,
   })
   phone_number: number;
+
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: false,
+  })
+  password: string;
 }
