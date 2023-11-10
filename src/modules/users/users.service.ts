@@ -10,7 +10,10 @@ export class UsersService {
     return 'user created';
   }
 
-  findAll() {}
+  async findAll() {
+    const users = await this.usersRepository.find();
+    return users;
+  }
 
   async findOne(id: number) {
     const user = await this.usersRepository.findOne({ where: { id } });

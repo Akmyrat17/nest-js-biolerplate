@@ -3,14 +3,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { UserLoginDto } from './dtos/user-login.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { UserNotFoundException } from 'src/common/http/exceptions';
 import { BcryptHelper } from 'src/helpers/bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from '../users/repositories/users.repository';
 import { UserRegisterDto } from './dtos/user-register.dto';
 import { responseMessage } from 'src/common/http/custom.response';
-import { UsersEntity } from '../users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -27,8 +25,7 @@ export class AuthService {
     user.password = await BcryptHelper.hashPassword(user.password);
     await this.usersRepository.save(user);
     const token = await this.tokenSign(user.username);
-    await this.cacheManager.set(user.username, { token }, 60 * 60 * 24);
-    return responseMessage({ action: 'success', data: user });
+    return responseMessage({ action: 'success', data: token });
   }
   async login(loginDto: UserLoginDto) {
     const { phone_number, password } = loginDto;
@@ -39,8 +36,8 @@ export class AuthService {
     const compared = BcryptHelper.comparePassword(password, user.password);
     if (!compared) throw new UserNotFoundException();
     const token = await this.tokenSign(user.username);
-    await this.cacheManager.set(user.username, { token }, 60 * 60 * 24);
-    return responseMessage({ action: 'success', data: 'success' });
+    await this.cacheManager.set(user.username, token);
+    return responseMessage({ action: 'success', data: { token } });
   }
 
   async tokenSign(username: string) {
@@ -51,5 +48,6 @@ export class AuthService {
       expiresIn,
       secret: secretOrKey,
     });
+    return token;
   }
 }
